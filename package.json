@@ -1,0 +1,35 @@
+{
+  "name": "nodejs_hw",
+  "version": "0.0.0",
+  "description": "NodeJS GMP 2019Q4",
+  "main": "index.js",
+  "scripts": {
+    "babel-node": "babel-node",
+    "task1": "nodemon --exec npm run babel-node -- ./src/task1.js localhost 8080",
+    "task2": "nodemon --exec npm run babel-node -- ./src/task2.js localhost 8090"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Atzkdeff/nodejs_hw.git"
+  },
+  "keywords": [
+    "nodeJS"
+  ],
+  "author": "AShyliahin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Atzkdeff/nodejs_5hw/issues"
+  },
+  "homepage": "https://github.com/Atzkdeff/nodejs_hw#readme",
+  "dependencies": {
+    "csvtojson": "^2.0.10"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.7.4",
+    "@babel/core": "^7.7.4",
+    "@babel/node": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
+    "nodemon": "^2.0.1",
+    "prettier": "1.19.1"
+  }
+}
