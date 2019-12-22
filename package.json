@@ -1,0 +1,45 @@
+{
+  "name": "nodejs_hw",
+  "version": "0.0.0",
+  "description": "NodeJS GMP 2019Q4",
+  "main": "src/app.js",
+  "scripts": {
+    "start.node.LS": "node ./bin/www",
+    "start.nodemon.LS.babel": "nodemon --exec babel-node -- ./bin/www",
+    "lint": "eslint ./"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Atzkdeff/nodejs_hw.git"
+  },
+  "keywords": [
+    "nodeJS"
+  ],
+  "author": "AShyliahin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Atzkdeff/nodejs_5hw/issues"
+  },
+  "homepage": "https://github.com/Atzkdeff/nodejs_hw#readme",
+  "dependencies": {
+    "@hapi/joi": "^16.1.8",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "^4.17.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "lodash": "^4.17.15",
+    "morgan": "~1.9.1",
+    "uuid": "^3.3.3"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.7.4",
+    "@babel/core": "^7.7.4",
+    "@babel/node": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.7.2",
+    "nodemon": "^2.0.1",
+    "prettier": "1.19.1"
+  }
+}
