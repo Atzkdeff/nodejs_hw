@@ -1,10 +1,10 @@
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
 
-const usersRouter = require('./routes/users');
+import { router as usersRouter } from './routes/users.js';
 
-const app = express();
+export const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -12,5 +12,3 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/users', usersRouter);
-
-module.exports = app;

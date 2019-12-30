@@ -1,5 +1,5 @@
-const Joi = require('@hapi/joi');
-const uuid = require('uuid/v4');
+import Joi from '@hapi/joi';
+import uuid from 'uuid/v4.js';
 
 const usersDB = [];
 
@@ -28,7 +28,9 @@ export class UsersController {
     }
 
     getUsers(req, res) {
-        const sortedUsers = usersDB.slice(0).sort((a, b) => (a.login.toUpperCase() > b.login.toUpperCase() ? 1 : -1));
+        const sortedUsers = usersDB
+            .filter((user) => !user.isDeleted)
+            .sort((a, b) => (a.login.toUpperCase() > b.login.toUpperCase() ? 1 : -1));
         const limit = !req.query.limit ? undefined : Number(req.query.limit);
         const loginSubstring = req.query.loginSubstring === '' ? undefined : req.query.loginSubstring;
 
@@ -48,7 +50,7 @@ export class UsersController {
     }
 
     getUserById(req, res) {
-        if (req.user) {
+        if (req.user && !req.user.isDeleted) {
             res.json(req.user);
         } else {
             res.status(404).json({ message: `User with id='${req.params.id}' not found` });
@@ -76,12 +78,10 @@ export class UsersController {
     updateUser(req, res) {
         const result = userSchema.validate(req.body, { abortEarly: false });
 
-        if (!req.user) {
+        if (!req.user || req.user.isDeleted) {
             res.status(404).send('There is no such user in db');
         } else if (!!result.error) {
             res.status(400).send(result.error.details);
-        } else if (req.user.isDeleted) {
-            res.status(405).send('User was deleted. Action cannot be applied');
         } else {
             const index = usersDB.findIndex((user) => user.id === req.params.id);
             usersDB[index] = { ...usersDB[index], ...result.value };

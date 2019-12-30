@@ -1,8 +1,8 @@
-const express = require('express');
-const router = express.Router();
+import express from 'express';
 
-import { UsersController } from '../controllers/index';
+import { UsersController } from '../controllers/index.js';
 
+export const router = express.Router();
 const usersController = new UsersController();
 
 router.param('id', usersController.findUserById);
@@ -31,5 +31,3 @@ router.patch('/:id', usersController.updateUser);
  * DELETE remove user
  */
 router.delete('/:id', usersController.deleteUser);
-
-module.exports = router;
