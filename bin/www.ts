@@ -3,9 +3,11 @@
 /**
  * Module dependencies.
  */
-import { app } from '../app.js';
+import { app } from '../app';
 import http from 'http';
 import Debug from 'debug';
+import { AddressInfo } from 'net';
+import 'reflect-metadata';
 
 const debug = Debug('nodejs-hw:server');
 
@@ -30,7 +32,7 @@ server.on('listening', onListening);
 /**
  * Normalize a port into a number, string, or false.
  */
-function normalizePort(val) {
+function normalizePort(val: string) {
     const normalizedPort = parseInt(val, 10);
 
     if (isNaN(normalizedPort)) {
@@ -49,7 +51,7 @@ function normalizePort(val) {
 /**
  * Event listener for HTTP server "error" event.
  */
-function onError(error) {
+function onError(error: NodeJS.ErrnoException) {
     if (error.syscall !== 'listen') {
         throw error;
     }
@@ -75,7 +77,12 @@ function onError(error) {
  * Event listener for HTTP server "listening" event.
  */
 function onListening() {
-    const addr = server.address();
-    const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+    const addr: AddressInfo | string | null = server.address();
+    let bind: string = '';
+
+    if (!!addr) {
+        bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+    }
+
     debug('Listening on ' + bind);
 }
