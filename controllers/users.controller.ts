@@ -34,20 +34,20 @@ export class UsersController {
         this.userService = Container.get(UsersService);
     }
 
-    public findUserById(req: IUserRequest, res: Response, next: NextFunction, id: string): void {
-        req.user = this.userService.getUserById(id);
+    public async findUserById(req: IUserRequest, res: Response, next: NextFunction, id: string): Promise<void> {
+        req.user = await this.userService.getUserById(id);
         next();
     }
 
-    public getUsers(req: Request, res: Response): void {
-        const limit: number = !req.query.limit ? undefined : Number(req.query.limit);
-        const loginSubstring: string = req.query.loginSubstring === '' ? undefined : req.query.loginSubstring;
-        this.userService.getUsers(limit, loginSubstring);
-        res.send();
+    public async getUsers(req: Request, res: Response): Promise<void> {
+        const limit: string = req.query.limit;
+        const loginSubstring: string = req.query.loginSubstring;
+        const users = await this.userService.getUsers(limit, loginSubstring);
+        res.send(users);
     }
 
     public getUserById(req: IUserRequest, res: Response): void {
-        if (req.user && !req.user.isDeleted) {
+        if (req.user) {
             res.json(req.user);
         } else {
             res.status(404).json({ message: `User with id='${req.params.id}' not found` });
@@ -55,43 +55,43 @@ export class UsersController {
     }
 
     public createNewUser(req: Request, res: Response): void {
-        // const result: ValidationResult = userSchema.validate(req.body, { abortEarly: false });
-        //
-        // if (!!result.error) {
-        //     res.status(400).send(result.error.details);
-        //     return;
-        // }
-        //
-        // const existingUser: IUser = this.userService.getUserByLogin(result.value.login);
-        //
-        // if (!existingUser || existingUser.isDeleted) {
-        let user: IUser = this.userService.createNewUser(undefined);
-        res.status(201).send(user);
-        // } else {
-        //     res.status(400).send('This login has already been registered');
-        // }
+        const result: ValidationResult<IUser> = userSchema.validate(req.body, { abortEarly: false });
+
+        if (!!result.error) {
+            res.status(400).send(result.error.details);
+            return;
+        }
+
+        this.userService
+            .createNewUser(result.value)
+            .then((user) => res.status(201).send(user))
+            .catch((error: Error) => res.status(400).send(error.message));
     }
 
     public updateUser(req: IUserRequest, res: Response): void {
-        const result: ValidationResult = userSchema.validate(req.body, { abortEarly: false });
+        const result: ValidationResult<IUser> = userSchema.validate(req.body, { abortEarly: false });
 
-        if (!req.user || req.user.isDeleted) {
+        if (!req.user) {
             res.status(404).send('There is no such user in db');
         } else if (!!result.error) {
             res.status(400).send(result.error.details);
         } else {
-            let user: IUser = this.userService.updateUser(result);
-            res.send(user);
+            this.userService
+                .updateUser({ ...result.value, id: req.user.id })
+                .then((user: IUser) => res.send(user))
+                .catch((error: Error) => res.status(400).send(error.message));
         }
     }
 
     public deleteUser(req: IUserRequest, res: Response): void {
         if (!req.user) {
             res.status(404).send('There is no such user in db');
-        } else if (req.user.isDeleted) {
-            res.status(405).send('User has already been deleted. Action cannot be applied');
-        } else {
-            res.send();
+            return;
         }
+
+        this.userService
+            .deleteUser(req.params.id)
+            .then(() => res.send())
+            .catch(() => res.status(404).send());
     }
 }

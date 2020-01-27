@@ -8,8 +8,6 @@
     "tsc": "tsc",
     "dev": "ts-node-dev --respawn --transpileOnly ./bin/www.ts",
     "prod": "tsc && node ./build/bin/www.js",
-    "start.node.LS": "node --experimental-modules bin/www.ts",
-    "start.nodemon.LS.babel": "nodemon --exec babel-node -- bin/www.ts",
     "lint": "eslint ./"
   },
   "repository": {

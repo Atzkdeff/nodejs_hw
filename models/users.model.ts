@@ -1,4 +1,4 @@
-import { DataTypes, Sequelize, Model, BuildOptions } from 'sequelize';
+import { DataTypes, Sequelize, Model, BuildOptions, Op } from 'sequelize';
 
 import { IUser } from '../interfaces/index';
 
@@ -29,15 +29,15 @@ const sequelize: Sequelize = new Sequelize(
 
 sequelize
     .authenticate()
-    .then(() => console.log('Good'))
-    .catch(() => console.log('Bad'));
+    .then(() => console.log('Database connection: Good'))
+    .catch(() => console.log('Database connection: Bad'));
 
 const User: UserModelStatic = <UserModelStatic>sequelize.define('user', {
     id: {
-        type: DataTypes.STRING,
+        type: DataTypes.UUIDV4,
         allowNull: false,
-        primaryKey: true
-        // defaultValue: Sequelize.literal()
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4
     },
     login: {
         type: DataTypes.STRING,
@@ -53,12 +53,39 @@ const User: UserModelStatic = <UserModelStatic>sequelize.define('user', {
 });
 
 export class UsersModel {
-    public async findAllUsers(): Promise<IUserModel[]> {
-        return await User.findAll();
+    public findUserById(id: string): Promise<IUserModel> {
+        return User.findOne({
+            where: {
+                id
+            }
+        });
     }
 
-    public async addUser(): Promise<IUserModel> {
-        console.log('adduser');
-        return await User.create({ id: '123', login: 'Someone', password: 'password', age: 5 });
+    public findUserByLogin(login: string): Promise<IUserModel> {
+        return User.findOne({
+            where: {
+                login
+            }
+        });
+    }
+
+    public findUsers(limit?: number, loginSubstring?: string): Promise<IUserModel[]> {
+        return User.findAll({ limit, where: { login: { [Op.substring]: loginSubstring } }, order: [['login', 'ASC']] });
+    }
+
+    public createUser(user: IUser): Promise<IUserModel> {
+        return User.create(user);
+    }
+
+    public updateUser(user: IUser): Promise<[number, IUserModel[]]> {
+        return User.update(user, { where: { id: user.id }, returning: true });
+    }
+
+    public deleteUser(id: string): Promise<number> {
+        return User.destroy({
+            where: {
+                id
+            }
+        });
     }
 }

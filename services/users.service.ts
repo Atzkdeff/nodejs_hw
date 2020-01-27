@@ -1,8 +1,7 @@
-import { ValidationResult } from '@hapi/joi';
 import { Container } from 'typedi';
 
 import { IUser } from '../interfaces/index';
-import { UsersDAL } from '../data-access/users.dal';
+import { UsersDAL } from '../data-access/index';
 
 export class UsersService {
     private usersDAL: UsersDAL;
@@ -11,34 +10,33 @@ export class UsersService {
         this.usersDAL = Container.get(UsersDAL);
     }
 
-    public getUserById(id: string): IUser {
+    public getUserById(id: string): Promise<IUser> {
         return this.usersDAL.getUserById(id);
     }
 
-    public getUserByLogin(login: string): IUser {
-        return this.usersDAL.getUserByLogin(login);
+    public getUsers(limit?: string, loginSubstring?: string): Promise<IUser[]> {
+        let numLimit: number = !limit ? undefined : Number(limit);
+        numLimit = numLimit < 0 ? undefined : numLimit;
+        loginSubstring = !loginSubstring ? '' : loginSubstring;
+
+        return this.usersDAL.getUsers(numLimit, loginSubstring);
     }
 
-    public getUsers(limit?: number, loginSubstring?: string): IUser[] {
-        const users: IUser[] = this.usersDAL
-            .getUsers(limit, loginSubstring)
-            .filter((user) => !user.isDeleted)
-            .sort((a, b) => (a.login.toUpperCase() > b.login.toUpperCase() ? 1 : -1));
-        return users;
+    public async createNewUser(userData: IUser): Promise<IUser> {
+        const existingUser: IUser = await this.usersDAL.getUserByLogin(userData.login);
+
+        if (!!existingUser) {
+            throw new Error('This login has already been registered');
+        }
+
+        return this.usersDAL.createNewUser(userData);
     }
 
-    public createNewUser(validationResult: ValidationResult): IUser {
-        let user: IUser = this.usersDAL.createNewUser(validationResult);
-        return user;
+    public updateUser(userData: IUser): Promise<IUser> {
+        return this.usersDAL.updateUser(userData);
     }
 
-    public updateUser(validationResult: ValidationResult): IUser {
-        let user: IUser = this.usersDAL.updateUser(validationResult);
-        return user;
-    }
-
-    public deleteUser(id: string): void {
-        this.usersDAL.deleteUser(id);
-        return;
+    public deleteUser(id: string): Promise<void> {
+        return this.usersDAL.deleteUser(id).then(() => undefined);
     }
 }

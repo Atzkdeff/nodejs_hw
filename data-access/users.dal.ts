@@ -1,5 +1,4 @@
 import { Container } from 'typedi';
-import { ValidationResult } from '@hapi/joi';
 
 import { IUser } from '../interfaces/index';
 import { UsersModel } from '../models/index';
@@ -9,61 +8,34 @@ export class UsersDAL {
 
     constructor() {
         this.usersModel = Container.get(UsersModel);
-        console.log('Create');
     }
 
-    public getUserById(id: string): IUser {
-        // usersDB.find((userDB) => userDB.id === id);
-        return;
+    public getUserById(id: string): Promise<IUser> {
+        return this.usersModel.findUserById(id);
     }
 
-    public getUserByLogin(login: string): IUser {
-        // usersDB.find((userDB) => userDB.id === id);
-        // tusersDB.find((user) => user.login === result.value.login)
-        return;
+    public getUserByLogin(login: string): Promise<IUser> {
+        return this.usersModel.findUserByLogin(login);
     }
 
-    public getUsers(limit?: number, loginSubstring?: string): IUser[] {
-        /**
-         *         const sortedUsers: IUser[] = usersDB
-         .filter((user) => !user.isDeleted)
-         .sort((a, b) => (a.login.toUpperCase() > b.login.toUpperCase() ? 1 : -1));
-         const limit: number = !req.query.limit ? undefined : Number(req.query.limit);
-         const loginSubstring: string = req.query.loginSubstring === '' ? undefined : req.query.loginSubstring;
-
-         if (loginSubstring === undefined && limit === undefined) {
-            res.send(sortedUsers);
-        } else if (limit === undefined || limit <= 0) {
-            res.send(sortedUsers.filter((user) => user.login.toLowerCase().includes(loginSubstring.toLowerCase())));
-        } else if (loginSubstring === undefined) {
-            res.send(sortedUsers.slice(0, limit));
-        } else {
-            res.send(
-                sortedUsers
-                    .filter((user) => user.login.toLowerCase().includes(loginSubstring.toLowerCase()))
-                    .slice(0, limit)
-            );
-        }
-         */
-        this.usersModel.findAllUsers();
-        return [];
+    public getUsers(limit?: number, loginSubstring?: string): Promise<IUser[]> {
+        return this.usersModel.findUsers(limit, loginSubstring);
     }
 
-    public createNewUser(validationResult: ValidationResult): IUser {
-        //            usersDB.push({ ...result.value, ...{ id: uuid(), isDeleted: false } });
-        this.usersModel.addUser();
-        return;
+    public createNewUser(userData: IUser): Promise<IUser> {
+        return this.usersModel.createUser(userData);
     }
 
-    public updateUser(validationResult: ValidationResult): IUser {
-        // const index = usersDB.findIndex((user) => user.id === req.params.id);
-        // usersDB[index] = { ...usersDB[index], ...result.value };
-        return;
+    public updateUser(userData: IUser): Promise<IUser> {
+        return (
+            this.usersModel
+                .updateUser(userData)
+                // @ts-ignore TODO: find a proper way for returning updated value
+                .then((value) => value[1][0].dataValues)
+        );
     }
 
-    public deleteUser(id: string): void {
-        //         const index: number = usersDB.findIndex((user) => user.id === req.params.id);
-        //             usersDB[index].isDeleted = true;
-        return;
+    public deleteUser(id: string): Promise<number> {
+        return this.usersModel.deleteUser(id);
     }
 }
