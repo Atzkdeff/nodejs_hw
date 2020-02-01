@@ -1,1 +1,1 @@
-export * from './users.dal';
+export * from './users.dao';

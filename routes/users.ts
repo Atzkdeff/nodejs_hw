@@ -1,34 +1,32 @@
 import express from 'express';
-import { Container } from 'typedi';
 
 import { UsersController } from '../controllers/index';
 
 export const router = express.Router();
-const usersController: UsersController = Container.get(UsersController);
 
-router.param('id', usersController.findUserById.bind(usersController));
+router.param('id', UsersController.findUserById);
 
 /**
  * GET get users
  */
-router.get('/', usersController.getUsers.bind(usersController));
+router.get('/', UsersController.getUsers);
 
 /**
  * GET get user by id
  */
-router.get('/:id', usersController.getUserById.bind(usersController));
+router.get('/:id', UsersController.getUserById);
 
 /**
  * POST create new user
  */
-router.post('/', usersController.createNewUser.bind(usersController));
+router.post('/', UsersController.createNewUser);
 
 /**
  * PATCH update user
  */
-router.patch('/:id', usersController.updateUser.bind(usersController));
+router.patch('/:id', UsersController.updateUser);
 
 /**
  * DELETE remove user
  */
-router.delete('/:id', usersController.deleteUser.bind(usersController));
+router.delete('/:id', UsersController.deleteUser);

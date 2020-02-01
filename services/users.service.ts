@@ -1,17 +1,17 @@
 import { Container } from 'typedi';
 
 import { IUser } from '../interfaces/index';
-import { UsersDAL } from '../data-access/index';
+import { UsersDao } from '../data-access/index';
 
 export class UsersService {
-    private usersDAL: UsersDAL;
+    private usersDAO: UsersDao;
 
     constructor() {
-        this.usersDAL = Container.get(UsersDAL);
+        this.usersDAO = Container.get(UsersDao);
     }
 
     public getUserById(id: string): Promise<IUser> {
-        return this.usersDAL.getUserById(id);
+        return this.usersDAO.getUserById(id);
     }
 
     public getUsers(limit?: string, loginSubstring?: string): Promise<IUser[]> {
@@ -19,24 +19,24 @@ export class UsersService {
         numLimit = numLimit < 0 ? undefined : numLimit;
         loginSubstring = !loginSubstring ? '' : loginSubstring;
 
-        return this.usersDAL.getUsers(numLimit, loginSubstring);
+        return this.usersDAO.getUsers(numLimit, loginSubstring);
     }
 
     public async createNewUser(userData: IUser): Promise<IUser> {
-        const existingUser: IUser = await this.usersDAL.getUserByLogin(userData.login);
+        const existingUser: IUser = await this.usersDAO.getUserByLogin(userData.login);
 
         if (!!existingUser) {
-            throw new Error('This login has already been registered');
+            throw new Error('existing_user_exception');
         }
 
-        return this.usersDAL.createNewUser(userData);
+        return this.usersDAO.createNewUser(userData);
     }
 
     public updateUser(userData: IUser): Promise<IUser> {
-        return this.usersDAL.updateUser(userData);
+        return this.usersDAO.updateUser(userData);
     }
 
     public deleteUser(id: string): Promise<void> {
-        return this.usersDAL.deleteUser(id).then(() => undefined);
+        return this.usersDAO.deleteUser(id).then(() => undefined);
     }
 }
