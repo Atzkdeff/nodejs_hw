@@ -16,7 +16,7 @@ export type UserModelStatic = typeof Model & {
 
 export const User: UserModelStatic = <UserModelStatic>db.define('user', {
     id: {
-        type: DataTypes.UUIDV4,
+        type: DataTypes.UUID,
         allowNull: false,
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4
@@ -30,6 +30,6 @@ export const User: UserModelStatic = <UserModelStatic>db.define('user', {
         allowNull: false
     },
     age: {
-        type: DataTypes.NUMBER
+        type: DataTypes.INTEGER
     }
 });

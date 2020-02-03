@@ -8,7 +8,8 @@ export const db: Sequelize = new Sequelize(
             ssl: true
         },
         define: {
-            timestamps: false
+            timestamps: true,
+            paranoid: true
         }
     }
 );
