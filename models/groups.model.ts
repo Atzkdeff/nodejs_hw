@@ -1,31 +1,28 @@
 import { DataTypes, Model, BuildOptions } from 'sequelize';
 
 import { db } from './data-base';
-import { IUser } from '../interfaces/index';
+import { IGroup } from '../interfaces/index';
 
-export interface IUserModel extends Model, IUser {}
+export interface IGroupModel extends Model, IGroup {}
 
 // Need to declare the static model so `findOne` etc. use correct types.
-export type UserModelStatic = typeof Model & {
-    new (values?: object, options?: BuildOptions): IUserModel;
+export type GroupModelStatic = typeof Model & {
+    new (values?: object, options?: BuildOptions): IGroupModel;
 };
 
-export const User: UserModelStatic = <UserModelStatic>db.define('user', {
+export const Group: GroupModelStatic = <GroupModelStatic>db.define('group', {
     id: {
         type: DataTypes.UUID,
         allowNull: false,
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4
     },
-    login: {
+    name: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    password: {
-        type: DataTypes.STRING,
+    permissions: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
         allowNull: false
-    },
-    age: {
-        type: DataTypes.INTEGER
     }
 });
