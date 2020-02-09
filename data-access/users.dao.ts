@@ -21,7 +21,11 @@ export class UsersDao {
     }
 
     public getUsers(limit?: number, loginSubstring?: string): Promise<IUser[]> {
-        return User.findAll({ limit, where: { login: { [Op.substring]: loginSubstring } }, order: [['login', 'ASC']] });
+        return User.findAll({
+            limit,
+            where: { login: { [Op.substring]: loginSubstring } },
+            order: [['login', 'ASC']]
+        });
     }
 
     public createNewUser(userData: IUser): Promise<IUser> {
@@ -36,11 +40,11 @@ export class UsersDao {
         );
     }
 
-    public deleteUser(id: string): Promise<number> {
+    public deleteUser(id: string): Promise<void> {
         return User.destroy({
             where: {
                 id
             }
-        });
+        }).then(() => undefined);
     }
 }

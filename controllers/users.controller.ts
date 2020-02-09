@@ -9,7 +9,7 @@ interface IUserRequest extends Request {
     user?: IUser;
 }
 
-const userSchema: Joi.ObjectSchema = Joi.object({
+const userCreateSchema: Joi.ObjectSchema = Joi.object({
     id: Joi.forbidden(),
     login: Joi.string()
         .required()
@@ -23,9 +23,22 @@ const userSchema: Joi.ObjectSchema = Joi.object({
         .positive()
         .integer()
         .min(4)
-        .max(130),
-    isDeleted: Joi.forbidden()
+        .max(130)
 });
+
+const userUpdateSchema: Joi.ObjectSchema = Joi.object({
+    id: Joi.forbidden(),
+    login: Joi.string().trim(),
+    password: Joi.string()
+        .pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/, 'password pattern')
+        .min(8),
+    age: Joi.number()
+        .positive()
+        .integer()
+        .min(4)
+        .max(130)
+});
+
 const userService: UsersService = Container.get(UsersService);
 
 export async function findUserById(req: IUserRequest, res: Response, next: NextFunction, id: string): Promise<void> {
@@ -57,7 +70,7 @@ export function getUserById(req: IUserRequest, res: Response): void {
 }
 
 export function createNewUser(req: Request, res: Response): void {
-    const result: ValidationResult<IUser> = userSchema.validate(req.body, { abortEarly: false });
+    const result: ValidationResult<IUser> = userCreateSchema.validate(req.body, { abortEarly: false });
 
     if (!!result.error) {
         res.status(400).send(result.error.details);
@@ -77,7 +90,7 @@ export function createNewUser(req: Request, res: Response): void {
 }
 
 export function updateUser(req: IUserRequest, res: Response): void {
-    const result: ValidationResult<IUser> = userSchema.validate(req.body, { abortEarly: false });
+    const result: ValidationResult<IUser> = userUpdateSchema.validate(req.body, { abortEarly: false });
 
     if (!req.user) {
         res.status(404).send('There is no such user in db');

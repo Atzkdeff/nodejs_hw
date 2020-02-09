@@ -37,6 +37,6 @@ export class UsersService {
     }
 
     public deleteUser(id: string): Promise<void> {
-        return this.usersDAO.deleteUser(id).then(() => undefined);
+        return this.usersDAO.deleteUser(id);
     }
 }
