@@ -42,4 +42,13 @@ export class GroupsDao {
             force: true
         }).then(() => undefined);
     }
+
+    public addUsersToGroup(groupId: string, userIds: string[]): Promise<void> {
+        // return Group.destroy({
+        //     where: {
+        //         id
+        //     },
+        //     force: true
+        // }).then(() => undefined);
+    }
 }

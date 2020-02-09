@@ -35,4 +35,8 @@ export class GroupsService {
     public deleteGroup(id: string): Promise<void> {
         return this.groupsDao.deleteGroup(id);
     }
+
+    public addUsersToGroup(groupId: string, userIds: string[]): Promise<void> {
+        return this.groupsDao.addUsersToGroup(groupId, userIds);
+    }
 }

@@ -23,7 +23,8 @@ const userCreateSchema: Joi.ObjectSchema = Joi.object({
         .positive()
         .integer()
         .min(4)
-        .max(130)
+        .max(130),
+    groups: Joi.array().items(Joi.string())
 });
 
 const userUpdateSchema: Joi.ObjectSchema = Joi.object({
@@ -36,7 +37,8 @@ const userUpdateSchema: Joi.ObjectSchema = Joi.object({
         .positive()
         .integer()
         .min(4)
-        .max(130)
+        .max(130),
+    groups: Joi.array().items(Joi.string())
 });
 
 const userService: UsersService = Container.get(UsersService);

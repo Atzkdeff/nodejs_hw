@@ -1,4 +1,4 @@
-import { DataTypes, Model, BuildOptions } from 'sequelize';
+import { DataTypes, Model, BuildOptions, Sequelize } from 'sequelize';
 
 import { db } from './data-base';
 import { IGroup } from '../interfaces/index';
@@ -8,6 +8,7 @@ export interface IGroupModel extends Model, IGroup {}
 // Need to declare the static model so `findOne` etc. use correct types.
 export type GroupModelStatic = typeof Model & {
     new (values?: object, options?: BuildOptions): IGroupModel;
+    associate: (models: Sequelize) => void;
 };
 
 export const Group: GroupModelStatic = <GroupModelStatic>db.define('group', {
@@ -26,3 +27,12 @@ export const Group: GroupModelStatic = <GroupModelStatic>db.define('group', {
         allowNull: false
     }
 });
+
+Group.associate = function(models) {
+    this.belongsToMany(models.user, {
+        through: 'UserGroup',
+        as: 'users',
+        foreignKey: 'groupId',
+        otherKey: 'userId'
+    });
+};
