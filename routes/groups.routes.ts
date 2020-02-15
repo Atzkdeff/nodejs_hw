@@ -30,3 +30,8 @@ router.patch('/:id', GroupsController.updateGroup);
  * DELETE remove group
  */
 router.delete('/:id', GroupsController.deleteGroup);
+
+/**
+ *  POST add users to a group
+ */
+router.post('/addUsersToGroup/:id', GroupsController.addUsersToGroup);

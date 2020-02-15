@@ -2,6 +2,8 @@ import { DataTypes, Model, BuildOptions, Sequelize } from 'sequelize';
 
 import { db } from './data-base';
 import { IUser } from '../interfaces/index';
+import { Group } from './groups.model';
+import { UserGroup } from './user-group.model';
 
 export interface IUserModel extends Model, IUser {}
 
@@ -11,29 +13,33 @@ export type UserModelStatic = typeof Model & {
     associate: (models: Sequelize) => void;
 };
 
-export const User: UserModelStatic = <UserModelStatic>db.define('user', {
-    id: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        primaryKey: true,
-        defaultValue: DataTypes.UUIDV4
+export const User: UserModelStatic = <UserModelStatic>db.define(
+    'User',
+    {
+        id: {
+            type: DataTypes.UUID,
+            allowNull: false,
+            primaryKey: true,
+            defaultValue: DataTypes.UUIDV4
+        },
+        login: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        password: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        age: {
+            type: DataTypes.INTEGER
+        }
     },
-    login: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    password: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    age: {
-        type: DataTypes.INTEGER
-    }
-});
+    { timestamps: true, paranoid: true }
+);
 
-User.associate = function(models) {
-    this.belongsToMany(models.group, {
-        through: 'UserGroup',
+User.associate = function() {
+    this.belongsToMany(Group, {
+        through: UserGroup,
         as: 'groups',
         foreignKey: 'userId',
         otherKey: 'groupId'

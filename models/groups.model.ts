@@ -2,6 +2,8 @@ import { DataTypes, Model, BuildOptions, Sequelize } from 'sequelize';
 
 import { db } from './data-base';
 import { IGroup } from '../interfaces/index';
+import { User } from './users.model';
+import { UserGroup } from './user-group.model';
 
 export interface IGroupModel extends Model, IGroup {}
 
@@ -11,7 +13,7 @@ export type GroupModelStatic = typeof Model & {
     associate: (models: Sequelize) => void;
 };
 
-export const Group: GroupModelStatic = <GroupModelStatic>db.define('group', {
+export const Group: GroupModelStatic = <GroupModelStatic>db.define('Group', {
     id: {
         type: DataTypes.UUID,
         allowNull: false,
@@ -28,9 +30,9 @@ export const Group: GroupModelStatic = <GroupModelStatic>db.define('group', {
     }
 });
 
-Group.associate = function(models) {
-    this.belongsToMany(models.user, {
-        through: 'UserGroup',
+Group.associate = function() {
+    this.belongsToMany(User, {
+        through: UserGroup,
         as: 'users',
         foreignKey: 'groupId',
         otherKey: 'userId'

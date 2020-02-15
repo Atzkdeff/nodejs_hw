@@ -29,6 +29,13 @@ const groupUpdateSchema: Joi.ObjectSchema = Joi.object({
         .unique()
 });
 
+const usersIdsSchema: Joi.ObjectSchema = Joi.object({
+    userIds: Joi.array()
+        .required()
+        .items(Joi.string())
+        .unique()
+});
+
 const groupsService: GroupsService = Container.get(GroupsService);
 
 export async function findGroupById(req: IGroupRequest, res: Response, next: NextFunction, id: string): Promise<void> {
@@ -102,4 +109,23 @@ export function deleteGroup(req: IGroupRequest, res: Response): void {
         .deleteGroup(req.params.id)
         .then(() => res.send())
         .catch(() => res.status(500).send());
+}
+
+export function addUsersToGroup(req: IGroupRequest, res: Response): void {
+    if (!req.group) {
+        res.status(404).send('There is no such group in db');
+        return;
+    }
+
+    const result: ValidationResult<{ userIds: string[] }> = usersIdsSchema.validate(req.body);
+
+    if (!!result.error) {
+        res.status(400).send(result.error.details);
+        return;
+    }
+
+    groupsService
+        .addUsersToGroup(req.group.id, result.value.userIds)
+        .then(() => res.send())
+        .catch((error) => res.status(500).send(error));
 }

@@ -1,42 +1,44 @@
 import { Container } from 'typedi';
 
 import { IGroup } from '../interfaces/index';
-import { GroupsDao } from '../data-access/index';
+import { GroupsDAO, UsersGroupsDAO } from '../data-access/index';
 
 export class GroupsService {
-    private groupsDao: GroupsDao;
+    private groupsDAO: GroupsDAO;
+    private usersGroupsDAO: UsersGroupsDAO;
 
     constructor() {
-        this.groupsDao = Container.get(GroupsDao);
+        this.groupsDAO = Container.get(GroupsDAO);
+        this.usersGroupsDAO = Container.get(UsersGroupsDAO);
     }
 
     public getGroupById(id: string): Promise<IGroup> {
-        return this.groupsDao.getGroupsById(id);
+        return this.groupsDAO.getGroupsById(id);
     }
 
     public getGroups(): Promise<IGroup[]> {
-        return this.groupsDao.getGroups();
+        return this.groupsDAO.getGroups();
     }
 
     public async createNewGroup(groupData: IGroup): Promise<IGroup> {
-        const existingGroup: IGroup = await this.groupsDao.getGroupByName(groupData.name);
+        const existingGroup: IGroup = await this.groupsDAO.getGroupByName(groupData.name);
 
         if (!!existingGroup) {
             throw new Error('existing_group_exception');
         }
 
-        return this.groupsDao.createNewGroup(groupData);
+        return this.groupsDAO.createNewGroup(groupData);
     }
 
     public updateGroup(groupData: IGroup): Promise<IGroup> {
-        return this.groupsDao.updateGroup(groupData);
+        return this.groupsDAO.updateGroup(groupData);
     }
 
     public deleteGroup(id: string): Promise<void> {
-        return this.groupsDao.deleteGroup(id);
+        return this.groupsDAO.deleteGroup(id);
     }
 
     public addUsersToGroup(groupId: string, userIds: string[]): Promise<void> {
-        return this.groupsDao.addUsersToGroup(groupId, userIds);
+        return this.usersGroupsDAO.addUsersToGroup(groupId, userIds);
     }
 }

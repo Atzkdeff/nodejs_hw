@@ -15,8 +15,10 @@ app.use(cookieParser());
 app.use('/users', usersRouter);
 app.use('/groups', groupsRouter);
 
+db.sync().then(() => console.log('All models were synchronized successfully.'));
+
 Object.keys(db.models).forEach((modelName) => {
     if (db.models[modelName].associate) {
-        db.models[modelName].associate(db.models);
+        db.models[modelName].associate();
     }
 });

@@ -1,7 +1,7 @@
 import { IGroup } from '../interfaces/index';
 import { Group } from '../models/index';
 
-export class GroupsDao {
+export class GroupsDAO {
     public getGroupsById(id: string): Promise<IGroup> {
         return Group.findOne({
             where: {
@@ -41,14 +41,5 @@ export class GroupsDao {
             },
             force: true
         }).then(() => undefined);
-    }
-
-    public addUsersToGroup(groupId: string, userIds: string[]): Promise<void> {
-        // return Group.destroy({
-        //     where: {
-        //         id
-        //     },
-        //     force: true
-        // }).then(() => undefined);
     }
 }

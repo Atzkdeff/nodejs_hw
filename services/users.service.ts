@@ -1,13 +1,13 @@
 import { Container } from 'typedi';
 
 import { IUser } from '../interfaces/index';
-import { UsersDao } from '../data-access/index';
+import { UsersDAO } from '../data-access/index';
 
 export class UsersService {
-    private usersDAO: UsersDao;
+    private usersDAO: UsersDAO;
 
     constructor() {
-        this.usersDAO = Container.get(UsersDao);
+        this.usersDAO = Container.get(UsersDAO);
     }
 
     public getUserById(id: string): Promise<IUser> {

@@ -10,7 +10,7 @@ export type UserGroupModelStatic = typeof Model & {
     new (values?: object, options?: BuildOptions): IUserGroupModel;
 };
 
-export const UserGroup: UserGroupModelStatic = <UserGroupModelStatic>db.define('user-group-table', {
+export const UserGroup: UserGroupModelStatic = <UserGroupModelStatic>db.define('UsersGroups', {
     id: {
         type: DataTypes.UUID,
         allowNull: false,

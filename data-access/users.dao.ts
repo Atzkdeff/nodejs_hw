@@ -1,9 +1,17 @@
 import { Op } from 'sequelize';
+import { Container } from 'typedi';
 
 import { IUser } from '../interfaces/index';
-import { User } from '../models/index';
+import { db, User } from '../models/index';
+import { UsersGroupsDAO } from './user-group.dao';
 
-export class UsersDao {
+export class UsersDAO {
+    private usersGroupsDAO: UsersGroupsDAO;
+
+    constructor() {
+        this.usersGroupsDAO = Container.get(UsersGroupsDAO);
+    }
+
     public getUserById(id: string): Promise<IUser> {
         return User.findOne({
             where: {
@@ -40,11 +48,22 @@ export class UsersDao {
         );
     }
 
-    public deleteUser(id: string): Promise<void> {
-        return User.destroy({
-            where: {
-                id
-            }
-        }).then(() => undefined);
+    public async deleteUser(id: string): Promise<void> {
+        try {
+            const result = await db.transaction(async () => {
+                await this.usersGroupsDAO.deleteUserGroup(id);
+                const response = await User.destroy({
+                    where: {
+                        id
+                    }
+                }).then(() => undefined);
+
+                return response;
+            });
+
+            return result;
+        } catch (error) {
+            return Promise.reject(error);
+        }
     }
 }
