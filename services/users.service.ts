@@ -1,4 +1,5 @@
 import { Container } from 'typedi';
+import { Model } from 'sequelize';
 
 import { IUser } from '../interfaces/index';
 import { UsersDAO } from '../data-access/index';
@@ -10,7 +11,7 @@ export class UsersService {
         this.usersDAO = Container.get(UsersDAO);
     }
 
-    public getUserById(id: string): Promise<IUser> {
+    public getUserById(id: string): Promise<IUser & Model> {
         return this.usersDAO.getUserById(id);
     }
 
@@ -36,7 +37,7 @@ export class UsersService {
         return this.usersDAO.updateUser(userData);
     }
 
-    public deleteUser(id: string): Promise<void> {
-        return this.usersDAO.deleteUser(id);
+    public deleteUser(user: IUser & Model): Promise<void> {
+        return this.usersDAO.deleteUser(user);
     }
 }

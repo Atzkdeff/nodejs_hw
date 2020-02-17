@@ -1,13 +1,14 @@
 import Joi, { ValidationResult } from '@hapi/joi';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
+import { Model } from 'sequelize';
 
 import { IGroup } from '../interfaces/index';
 import { GroupsService } from '../services/index';
 import { groupPermissions } from '../constants';
 
 interface IGroupRequest extends Request {
-    group?: IGroup;
+    group?: IGroup & Model;
 }
 
 const groupCreateSchema: Joi.ObjectSchema = Joi.object({
@@ -125,7 +126,7 @@ export function addUsersToGroup(req: IGroupRequest, res: Response): void {
     }
 
     groupsService
-        .addUsersToGroup(req.group.id, result.value.userIds)
+        .addUsersToGroup(req.group, result.value.userIds)
         .then(() => res.send())
         .catch((error) => res.status(500).send(error));
 }

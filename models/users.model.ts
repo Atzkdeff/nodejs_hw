@@ -3,7 +3,6 @@ import { DataTypes, Model, BuildOptions, Sequelize } from 'sequelize';
 import { db } from './data-base';
 import { IUser } from '../interfaces/index';
 import { Group } from './groups.model';
-import { UserGroup } from './user-group.model';
 
 export interface IUserModel extends Model, IUser {}
 
@@ -39,7 +38,7 @@ export const User: UserModelStatic = <UserModelStatic>db.define(
 
 User.associate = function() {
     this.belongsToMany(Group, {
-        through: UserGroup,
+        through: 'UserGroup',
         as: 'groups',
         foreignKey: 'userId',
         otherKey: 'groupId'

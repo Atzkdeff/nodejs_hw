@@ -1,8 +1,10 @@
+import { Model } from 'sequelize';
+
 import { IGroup } from '../interfaces/index';
 import { Group } from '../models/index';
 
 export class GroupsDAO {
-    public getGroupsById(id: string): Promise<IGroup> {
+    public getGroupsById(id: string): Promise<IGroup & Model> {
         return Group.findOne({
             where: {
                 id
@@ -41,5 +43,9 @@ export class GroupsDAO {
             },
             force: true
         }).then(() => undefined);
+    }
+
+    public addUsersToGroup(group: IGroup & Model, userIds: string[]): Promise<void> {
+        return (<any>group).addUsers(userIds).then(() => undefined);
     }
 }

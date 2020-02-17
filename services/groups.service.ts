@@ -1,18 +1,17 @@
 import { Container } from 'typedi';
+import { Model } from 'sequelize';
 
 import { IGroup } from '../interfaces/index';
-import { GroupsDAO, UsersGroupsDAO } from '../data-access/index';
+import { GroupsDAO } from '../data-access/index';
 
 export class GroupsService {
     private groupsDAO: GroupsDAO;
-    private usersGroupsDAO: UsersGroupsDAO;
 
     constructor() {
         this.groupsDAO = Container.get(GroupsDAO);
-        this.usersGroupsDAO = Container.get(UsersGroupsDAO);
     }
 
-    public getGroupById(id: string): Promise<IGroup> {
+    public getGroupById(id: string): Promise<IGroup & Model> {
         return this.groupsDAO.getGroupsById(id);
     }
 
@@ -38,7 +37,7 @@ export class GroupsService {
         return this.groupsDAO.deleteGroup(id);
     }
 
-    public addUsersToGroup(groupId: string, userIds: string[]): Promise<void> {
-        return this.usersGroupsDAO.addUsersToGroup(groupId, userIds);
+    public addUsersToGroup(group: IGroup & Model, userIds: string[]): Promise<void> {
+        return this.groupsDAO.addUsersToGroup(group, userIds);
     }
 }

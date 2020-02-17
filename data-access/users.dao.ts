@@ -1,18 +1,10 @@
-import { Op } from 'sequelize';
-import { Container } from 'typedi';
+import { Model, Op } from 'sequelize';
 
 import { IUser } from '../interfaces/index';
 import { db, User } from '../models/index';
-import { UsersGroupsDAO } from './user-group.dao';
 
 export class UsersDAO {
-    private usersGroupsDAO: UsersGroupsDAO;
-
-    constructor() {
-        this.usersGroupsDAO = Container.get(UsersGroupsDAO);
-    }
-
-    public getUserById(id: string): Promise<IUser> {
+    public getUserById(id: string): Promise<IUser & Model> {
         return User.findOne({
             where: {
                 id
@@ -48,22 +40,10 @@ export class UsersDAO {
         );
     }
 
-    public async deleteUser(id: string): Promise<void> {
-        try {
-            const result = await db.transaction(async () => {
-                await this.usersGroupsDAO.deleteUserGroup(id);
-                const response = await User.destroy({
-                    where: {
-                        id
-                    }
-                }).then(() => undefined);
-
-                return response;
-            });
-
-            return result;
-        } catch (error) {
-            return Promise.reject(error);
-        }
+    public deleteUser(user: IUser & Model): Promise<void> {
+        return db.transaction(async (t) => {
+            await (<any>user).setGroups([], { transaction: t });
+            await user.destroy({ transaction: t });
+        });
     }
 }

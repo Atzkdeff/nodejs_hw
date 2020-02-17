@@ -1,12 +1,13 @@
 import Joi, { ValidationResult } from '@hapi/joi';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
+import { Model } from 'sequelize';
 
 import { IUser } from '../interfaces/index';
 import { UsersService } from '../services/index';
 
 interface IUserRequest extends Request {
-    user?: IUser;
+    user?: IUser & Model;
 }
 
 const userCreateSchema: Joi.ObjectSchema = Joi.object({
@@ -113,7 +114,7 @@ export function deleteUser(req: IUserRequest, res: Response): void {
     }
 
     userService
-        .deleteUser(req.params.id)
+        .deleteUser(req.user)
         .then(() => res.send())
         .catch(() => res.status(500).send());
 }
