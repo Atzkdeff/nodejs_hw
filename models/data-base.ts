@@ -9,7 +9,8 @@ export const db: Sequelize = new Sequelize(
         },
         define: {
             timestamps: false
-        }
+        },
+        logging: false
     }
 );
 
