@@ -6,8 +6,8 @@ import { Model } from 'sequelize';
 import { IGroup } from '../interfaces/index';
 import { GroupsService } from '../services/index';
 import { groupPermissions } from '../constants';
+import { handleError } from '../loggers/index';
 import { HttpRequestError } from './http-request-error';
-import { log } from './log.decorator';
 
 interface IGroupRequest extends Request {
     group?: IGroup & Model;
@@ -48,19 +48,19 @@ export class GroupsController {
     //     this.groupsService = Container.get(GroupsService);
     // }
 
-    @log
+    @handleError
     public async findGroupById(req: IGroupRequest, res: Response, next: NextFunction, id: string): Promise<void> {
         req.group = await groupsService.getGroupById(id);
         next();
     }
 
-    @log
+    @handleError
     public async getGroups(req: Request, res: Response): Promise<void> {
         const groups = await groupsService.getGroups();
         res.send(groups);
     }
 
-    @log
+    @handleError
     public getGroupById(req: IGroupRequest, res: Response): void {
         if (req.group) {
             res.json(req.group);
@@ -69,7 +69,7 @@ export class GroupsController {
         }
     }
 
-    @log
+    @handleError
     public async createNewGroup(req: Request, res: Response): Promise<void> {
         try {
             const result: ValidationResult<IGroup> = groupCreateSchema.validate(req.body, { abortEarly: false });
@@ -90,7 +90,7 @@ export class GroupsController {
         }
     }
 
-    @log
+    @handleError
     public async updateGroup(req: IGroupRequest, res: Response): Promise<void> {
         const result: ValidationResult<IGroup> = groupUpdateSchema.validate(req.body, { abortEarly: false });
 
@@ -104,7 +104,7 @@ export class GroupsController {
         }
     }
 
-    @log
+    @handleError
     public async deleteGroup(req: IGroupRequest, res: Response): Promise<void> {
         if (!req.group) {
             throw new HttpRequestError(404, 'There is no such group in db');
@@ -114,7 +114,7 @@ export class GroupsController {
         res.send();
     }
 
-    @log
+    @handleError
     public async addUsersToGroup(req: IGroupRequest, res: Response): Promise<void> {
         if (!req.group) {
             throw new HttpRequestError(404, 'There is no such group in db');

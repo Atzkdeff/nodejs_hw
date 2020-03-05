@@ -5,8 +5,8 @@ import { Model } from 'sequelize';
 
 import { IUser } from '../interfaces/index';
 import { UsersService } from '../services/index';
+import { handleError } from '../loggers/index';
 import { HttpRequestError } from './http-request-error';
-import { log } from './log.decorator';
 
 interface IUserRequest extends Request {
     user?: IUser & Model;
@@ -53,13 +53,13 @@ export class UsersController {
     //     this.userService = Container.get(UsersService);
     // }
 
-    @log
+    @handleError
     public async findUserById(req: IUserRequest, res: Response, next: NextFunction, id: string): Promise<void> {
         req.user = await userService.getUserById(id);
         next();
     }
 
-    @log
+    @handleError
     public async getUsers(req: Request, res: Response): Promise<void> {
         const limit: string = req.query.limit;
         const loginSubstring: string = req.query.loginSubstring;
@@ -67,7 +67,7 @@ export class UsersController {
         res.send(users);
     }
 
-    @log
+    @handleError
     public getUserById(req: IUserRequest, res: Response): void {
         if (req.user) {
             res.json(req.user);
@@ -76,7 +76,7 @@ export class UsersController {
         }
     }
 
-    @log
+    @handleError
     public async createNewUser(req: Request, res: Response): Promise<void> {
         const result: ValidationResult<IUser> = userCreateSchema.validate(req.body, { abortEarly: false });
         try {
@@ -97,7 +97,7 @@ export class UsersController {
         }
     }
 
-    @log
+    @handleError
     public async updateUser(req: IUserRequest, res: Response): Promise<void> {
         const result: ValidationResult<IUser> = userUpdateSchema.validate(req.body, { abortEarly: false });
 
@@ -111,7 +111,7 @@ export class UsersController {
         }
     }
 
-    @log
+    @handleError
     public async deleteUser(req: IUserRequest, res: Response): Promise<void> {
         if (!req.user) {
             throw new HttpRequestError(404, 'There is no such user in db');
