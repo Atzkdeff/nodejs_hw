@@ -5,6 +5,8 @@ import { Model } from 'sequelize';
 
 import { IUser } from '../interfaces/index';
 import { UsersService } from '../services/index';
+import { handleError } from '../loggers/index';
+import { HttpRequestError } from './http-request-error';
 
 interface IUserRequest extends Request {
     user?: IUser & Model;
@@ -44,77 +46,78 @@ const userUpdateSchema: Joi.ObjectSchema = Joi.object({
 
 const userService: UsersService = Container.get(UsersService);
 
-export async function findUserById(req: IUserRequest, res: Response, next: NextFunction, id: string): Promise<void> {
-    try {
+export class UsersController {
+    // private userService: UsersService;
+    //
+    // constructor() {
+    //     this.userService = Container.get(UsersService);
+    // }
+
+    @handleError
+    public async findUserById(req: IUserRequest, res: Response, next: NextFunction, id: string): Promise<void> {
         req.user = await userService.getUserById(id);
         next();
-    } catch (e) {
-        res.status(500).send(e.message);
     }
-}
 
-export async function getUsers(req: Request, res: Response): Promise<void> {
-    try {
+    @handleError
+    public async getUsers(req: Request, res: Response): Promise<void> {
         const limit: string = req.query.limit;
         const loginSubstring: string = req.query.loginSubstring;
         const users = await userService.getUsers(limit, loginSubstring);
         res.send(users);
-    } catch (e) {
-        res.status(500).send(e.message);
-    }
-}
-
-export function getUserById(req: IUserRequest, res: Response): void {
-    if (req.user) {
-        res.json(req.user);
-    } else {
-        res.status(404).json({ message: `User with id='${req.params.id}' not found` });
-    }
-}
-
-export function createNewUser(req: Request, res: Response): void {
-    const result: ValidationResult<IUser> = userCreateSchema.validate(req.body, { abortEarly: false });
-
-    if (!!result.error) {
-        res.status(400).send(result.error.details);
-        return;
     }
 
-    userService
-        .createNewUser(result.value)
-        .then((user) => res.status(201).send(user))
-        .catch((error: Error) => {
-            if (error.message === 'existing_user_exception') {
-                res.status(400).send('This login has already been registered');
-            } else {
-                res.status(500).send(error.message);
+    @handleError
+    public getUserById(req: IUserRequest, res: Response): void {
+        if (req.user) {
+            res.json(req.user);
+        } else {
+            throw new HttpRequestError(404, `User with id='${req.params.id}' not found`);
+        }
+    }
+
+    @handleError
+    public async createNewUser(req: Request, res: Response): Promise<void> {
+        const result: ValidationResult<IUser> = userCreateSchema.validate(req.body, { abortEarly: false });
+        try {
+            if (!!result.error) {
+                res.status(400).send(result.error.details);
+                return;
             }
-        });
-}
 
-export function updateUser(req: IUserRequest, res: Response): void {
-    const result: ValidationResult<IUser> = userUpdateSchema.validate(req.body, { abortEarly: false });
+            let newUser: IUser = await userService.createNewUser(result.value);
 
-    if (!req.user) {
-        res.status(404).send('There is no such user in db');
-    } else if (!!result.error) {
-        res.status(400).send(result.error.details);
-    } else {
-        userService
-            .updateUser({ ...result.value, id: req.user.id })
-            .then((user: IUser) => res.send(user))
-            .catch((error: Error) => res.status(500).send(error.message));
-    }
-}
-
-export function deleteUser(req: IUserRequest, res: Response): void {
-    if (!req.user) {
-        res.status(404).send('There is no such user in db');
-        return;
+            res.status(201).send(newUser);
+        } catch (error) {
+            if (error.message === 'existing_user_exception') {
+                throw new HttpRequestError(400, 'This login has already been registered');
+            } else {
+                throw error;
+            }
+        }
     }
 
-    userService
-        .deleteUser(req.user)
-        .then(() => res.send())
-        .catch(() => res.status(500).send());
+    @handleError
+    public async updateUser(req: IUserRequest, res: Response): Promise<void> {
+        const result: ValidationResult<IUser> = userUpdateSchema.validate(req.body, { abortEarly: false });
+
+        if (!req.user) {
+            throw new HttpRequestError(404, 'There is no such user in db');
+        } else if (!!result.error) {
+            throw new HttpRequestError(400, 'Form validation error');
+        } else {
+            let updatedUser: IUser = await userService.updateUser({ ...result.value, id: req.user.id });
+            res.send(updatedUser);
+        }
+    }
+
+    @handleError
+    public async deleteUser(req: IUserRequest, res: Response): Promise<void> {
+        if (!req.user) {
+            throw new HttpRequestError(404, 'There is no such user in db');
+        }
+
+        await userService.deleteUser(req.user);
+        res.send();
+    }
 }

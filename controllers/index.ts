@@ -1,4 +1,2 @@
-import * as UsersController from './users.controller';
-import * as GroupsController from './groups.controller';
-
-export { UsersController, GroupsController };
+export * from './users.controller';
+export * from './groups.controller';

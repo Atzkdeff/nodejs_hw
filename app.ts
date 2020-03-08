@@ -1,19 +1,23 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import logger from 'morgan';
+import morgan from 'morgan';
 
 import { usersRouter, groupsRouter } from './routes/index';
 import { db } from './models/index';
+import { caughtException, handleRejection, handleServerError } from './loggers/index';
 
 export const app = express();
 
-app.use(logger('dev'));
+process.on('uncaughtException', caughtException).on('unhandledRejection', handleRejection);
+
+app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/users', usersRouter);
 app.use('/groups', groupsRouter);
+app.use(handleServerError);
 
 db.sync().then(() => console.log('All models were synchronized successfully.'));
 

@@ -5,11 +5,13 @@
  */
 import { app } from '../app';
 import http from 'http';
-import Debug from 'debug';
+import debug from 'debug';
 import { AddressInfo } from 'net';
 import 'reflect-metadata';
 
-const debug = Debug('nodejs-hw:server');
+const serverDebug = debug('nodejs-hw:server');
+
+debug.enable('nodejs-hw:server');
 
 /**
  * Get port from environment and store in Express.
@@ -83,6 +85,5 @@ function onListening() {
     if (!!addr) {
         bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
     }
-
-    debug('Listening on ' + bind);
+    serverDebug('Listening on ' + bind);
 }

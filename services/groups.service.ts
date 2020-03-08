@@ -11,12 +11,12 @@ export class GroupsService {
         this.groupsDAO = Container.get(GroupsDAO);
     }
 
-    public getGroupById(id: string): Promise<IGroup & Model> {
-        return this.groupsDAO.getGroupsById(id);
+    public async getGroupById(id: string): Promise<IGroup & Model> {
+        return await this.groupsDAO.getGroupsById(id);
     }
 
-    public getGroups(): Promise<IGroup[]> {
-        return this.groupsDAO.getGroups();
+    public async getGroups(): Promise<IGroup[]> {
+        return await this.groupsDAO.getGroups();
     }
 
     public async createNewGroup(groupData: IGroup): Promise<IGroup> {
@@ -26,18 +26,18 @@ export class GroupsService {
             throw new Error('existing_group_exception');
         }
 
-        return this.groupsDAO.createNewGroup(groupData);
+        return await this.groupsDAO.createNewGroup(groupData);
     }
 
-    public updateGroup(groupData: IGroup): Promise<IGroup> {
-        return this.groupsDAO.updateGroup(groupData);
+    public async updateGroup(groupData: IGroup): Promise<IGroup> {
+        return await this.groupsDAO.updateGroup(groupData);
     }
 
-    public deleteGroup(id: string): Promise<void> {
-        return this.groupsDAO.deleteGroup(id);
+    public async deleteGroup(id: string): Promise<void> {
+        return await this.groupsDAO.deleteGroup(id);
     }
 
-    public addUsersToGroup(group: IGroup & Model, userIds: string[]): Promise<void> {
-        return this.groupsDAO.addUsersToGroup(group, userIds);
+    public async addUsersToGroup(group: IGroup & Model, userIds: string[]): Promise<void> {
+        return await this.groupsDAO.addUsersToGroup(group, userIds);
     }
 }

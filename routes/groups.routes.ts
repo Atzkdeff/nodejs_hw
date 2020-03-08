@@ -4,34 +4,36 @@ import { GroupsController } from '../controllers/index';
 
 export const router = express.Router();
 
-router.param('id', GroupsController.findGroupById);
+let groupsController: GroupsController = new GroupsController();
+
+router.param('id', groupsController.findGroupById);
 
 /**
  * GET get groups
  */
-router.get('/', GroupsController.getGroups);
+router.get('/', groupsController.getGroups);
 
 /**
  * GET get group by id
  */
-router.get('/:id', GroupsController.getGroupById);
+router.get('/:id', groupsController.getGroupById);
 
 /**
  * POST create new group
  */
-router.post('/', GroupsController.createNewGroup);
+router.post('/', groupsController.createNewGroup);
 
 /**
  * PATCH update group
  */
-router.patch('/:id', GroupsController.updateGroup);
+router.patch('/:id', groupsController.updateGroup);
 
 /**
  * DELETE remove group
  */
-router.delete('/:id', GroupsController.deleteGroup);
+router.delete('/:id', groupsController.deleteGroup);
 
 /**
  *  POST add users to a group
  */
-router.post('/addUsersToGroup/:id', GroupsController.addUsersToGroup);
+router.post('/addUsersToGroup/:id', groupsController.addUsersToGroup);

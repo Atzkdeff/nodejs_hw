@@ -11,16 +11,16 @@ export class UsersService {
         this.usersDAO = Container.get(UsersDAO);
     }
 
-    public getUserById(id: string): Promise<IUser & Model> {
-        return this.usersDAO.getUserById(id);
+    public async getUserById(id: string): Promise<IUser & Model> {
+        return await this.usersDAO.getUserById(id);
     }
 
-    public getUsers(limit?: string, loginSubstring?: string): Promise<IUser[]> {
+    public async getUsers(limit?: string, loginSubstring?: string): Promise<IUser[]> {
         let numLimit: number = !limit ? undefined : Number(limit);
         numLimit = numLimit < 0 ? undefined : numLimit;
         loginSubstring = !loginSubstring ? '' : loginSubstring;
 
-        return this.usersDAO.getUsers(numLimit, loginSubstring);
+        return await this.usersDAO.getUsers(numLimit, loginSubstring);
     }
 
     public async createNewUser(userData: IUser): Promise<IUser> {
@@ -30,14 +30,14 @@ export class UsersService {
             throw new Error('existing_user_exception');
         }
 
-        return this.usersDAO.createNewUser(userData);
+        return await this.usersDAO.createNewUser(userData);
     }
 
-    public updateUser(userData: IUser): Promise<IUser> {
-        return this.usersDAO.updateUser(userData);
+    public async updateUser(userData: IUser): Promise<IUser> {
+        return await this.usersDAO.updateUser(userData);
     }
 
-    public deleteUser(user: IUser & Model): Promise<void> {
-        return this.usersDAO.deleteUser(user);
+    public async deleteUser(user: IUser & Model): Promise<void> {
+        return await this.usersDAO.deleteUser(user);
     }
 }
