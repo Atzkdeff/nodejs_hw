@@ -4,16 +4,29 @@ import morgan from 'morgan';
 
 import { usersRouter, groupsRouter } from './routes/index';
 import { db } from './models/index';
-import { caughtException, handleRejection, handleServerError } from './loggers/index';
+import { checkToken, userLogin, caughtException, handleRejection, handleServerError } from './middlewares/index';
+import cors, { CorsOptions } from 'cors';
 
 export const app = express();
+
+let corsOptions: CorsOptions = {
+    origin: 'http://epam.com',
+    methods: ['GET', 'PATCH', 'POST', 'DELETE'],
+    optionsSuccessStatus: 200
+};
 
 process.on('uncaughtException', caughtException).on('unhandledRejection', handleRejection);
 
 app.use(morgan('dev'));
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+app.post('/login', userLogin);
+app.use(checkToken, function(req, res, next) {
+    next();
+});
 
 app.use('/users', usersRouter);
 app.use('/groups', groupsRouter);

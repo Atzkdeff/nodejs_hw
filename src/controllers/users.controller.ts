@@ -5,8 +5,7 @@ import { Model } from 'sequelize';
 
 import { IUser } from '../interfaces/index';
 import { UsersService } from '../services/index';
-import { handleError } from '../loggers/index';
-import { HttpRequestError } from './http-request-error';
+import { HttpRequestError, handleError } from '../utils/index';
 
 interface IUserRequest extends Request {
     user?: IUser & Model;

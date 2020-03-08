@@ -1,4 +1,4 @@
-import { stdLogger } from './loggers';
+import { stdLogger } from '../utils/loggers';
 
 export function caughtException(err: Error) {
     stdLogger.error(err.message);

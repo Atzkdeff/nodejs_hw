@@ -6,8 +6,7 @@ import { Model } from 'sequelize';
 import { IGroup } from '../interfaces/index';
 import { GroupsService } from '../services/index';
 import { groupPermissions } from '../constants';
-import { handleError } from '../loggers/index';
-import { HttpRequestError } from './http-request-error';
+import { HttpRequestError, handleError } from '../utils/index';
 
 interface IGroupRequest extends Request {
     group?: IGroup & Model;
