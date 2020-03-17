@@ -2,9 +2,9 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 
-import { usersRouter, groupsRouter } from './routes/index';
+import { usersRouter, groupsRouter, authRouter } from './routes/index';
 import { db } from './models/index';
-import { checkToken, userLogin, caughtException, handleRejection, handleServerError } from './middlewares/index';
+import { checkToken, caughtException, handleRejection, handleServerError } from './middlewares/index';
 import cors, { CorsOptions } from 'cors';
 
 export const app = express();
@@ -23,13 +23,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.post('/login', userLogin);
-app.use(checkToken, function(req, res, next) {
-    next();
-});
+app.use('/login', authRouter);
 
-app.use('/users', usersRouter);
-app.use('/groups', groupsRouter);
+app.use('/users', checkToken, usersRouter);
+app.use('/groups', checkToken, groupsRouter);
 app.use(handleServerError);
 
 db.sync().then(() => console.log('All models were synchronized successfully.'));

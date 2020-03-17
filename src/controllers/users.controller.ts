@@ -46,12 +46,6 @@ const userUpdateSchema: Joi.ObjectSchema = Joi.object({
 const userService: UsersService = Container.get(UsersService);
 
 export class UsersController {
-    // private userService: UsersService;
-    //
-    // constructor() {
-    //     this.userService = Container.get(UsersService);
-    // }
-
     @handleError
     public async findUserById(req: IUserRequest, res: Response, next: NextFunction, id: string): Promise<void> {
         req.user = await userService.getUserById(id);

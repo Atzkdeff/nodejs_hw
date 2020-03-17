@@ -41,12 +41,6 @@ const usersIdsSchema: Joi.ObjectSchema = Joi.object({
 const groupsService: GroupsService = Container.get(GroupsService);
 
 export class GroupsController {
-    // private groupsService: GroupsService;
-    //
-    // constructor() {
-    //     this.groupsService = Container.get(GroupsService);
-    // }
-
     @handleError
     public async findGroupById(req: IGroupRequest, res: Response, next: NextFunction, id: string): Promise<void> {
         req.group = await groupsService.getGroupById(id);
