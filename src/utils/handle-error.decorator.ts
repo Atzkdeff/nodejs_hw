@@ -2,7 +2,7 @@ import isEmpty from 'lodash/isEmpty';
 
 import { jsonLogger, simpleLogger } from './loggers';
 
-export function handleError(object, propertyKey: string, descriptor) {
+export function handleError(object, propertyKey: string, descriptor: TypedPropertyDescriptor<any>) {
     const originalMethod = descriptor.value;
     descriptor.value = async function(...args) {
         const [req, res, next] = args;

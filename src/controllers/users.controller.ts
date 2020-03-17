@@ -5,8 +5,7 @@ import { Model } from 'sequelize';
 
 import { IUser } from '../interfaces/index';
 import { UsersService } from '../services/index';
-import { handleError } from '../loggers/index';
-import { HttpRequestError } from './http-request-error';
+import { HttpRequestError, handleError } from '../utils/index';
 
 interface IUserRequest extends Request {
     user?: IUser & Model;
@@ -47,12 +46,6 @@ const userUpdateSchema: Joi.ObjectSchema = Joi.object({
 const userService: UsersService = Container.get(UsersService);
 
 export class UsersController {
-    // private userService: UsersService;
-    //
-    // constructor() {
-    //     this.userService = Container.get(UsersService);
-    // }
-
     @handleError
     public async findUserById(req: IUserRequest, res: Response, next: NextFunction, id: string): Promise<void> {
         req.user = await userService.getUserById(id);

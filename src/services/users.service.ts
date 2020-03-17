@@ -15,6 +15,10 @@ export class UsersService {
         return await this.usersDAO.getUserById(id);
     }
 
+    public async getUserByLogin(login: string): Promise<IUser & Model> {
+        return await this.usersDAO.getUserByLogin(login);
+    }
+
     public async getUsers(limit?: string, loginSubstring?: string): Promise<IUser[]> {
         let numLimit: number = !limit ? undefined : Number(limit);
         numLimit = numLimit < 0 ? undefined : numLimit;
