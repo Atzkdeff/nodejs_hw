@@ -1,13 +1,12 @@
 import Joi, { ValidationResult } from '@hapi/joi';
 import { NextFunction, Request, Response } from 'express';
-import { Container } from 'typedi';
 import { Model } from 'sequelize';
 
 import { IUser } from '../interfaces/index';
-import { UsersService } from '../services/index';
 import { HttpRequestError, handleError } from '../utils/index';
+import { UsersService } from '../services/users.service';
 
-interface IUserRequest extends Request {
+export interface IUserRequest extends Request {
     user?: IUser & Model;
 }
 
@@ -43,7 +42,7 @@ const userUpdateSchema: Joi.ObjectSchema = Joi.object({
     groups: Joi.array().items(Joi.string())
 });
 
-const userService: UsersService = Container.get(UsersService);
+const userService: UsersService = new UsersService();
 
 export class UsersController {
     @handleError
