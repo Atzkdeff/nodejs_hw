@@ -12,7 +12,7 @@ export class UsersDAO {
         });
     }
 
-    public getUserByLogin(login: string): Promise<IUser> {
+    public getUserByLogin(login: string): Promise<IUser & Model> {
         return User.findOne({
             where: {
                 login
